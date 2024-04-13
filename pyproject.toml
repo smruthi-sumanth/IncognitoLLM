@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "incognitollm"
+version = "0.1.0"
+description = ""
+authors = ["p1utoze <1ds21ai001@dsce.edu.in>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+streamlit = "^1.33.0"
+streamlit-antd-components = "^0.3.2"
+python-dotenv = "^1.0.1"
+folium = "^0.16.0"
+geopandas = "^0.14.3"
+newsapi-python = "^0.2.7"
+streamlit-extras = "^0.4.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
