@@ -11,7 +11,7 @@ if 'submitted_form' not in st.session_state:
 if 'uploaded_document' not in st.session_state:
     st.session_state['uploaded_document'] = False
 
-def main():
+def run():
     st.sidebar.title('Navigation')
     page = st.sidebar.radio("Go to", ["Home", "Enter Form", "Attach Document"])
 
@@ -63,7 +63,7 @@ def display_map(show_district_layer, show_parliamentary_layer):
     m.fit_bounds([[11.5, 73.5], [18.5, 79.5]])
     
     if show_district_layer:
-        shapefile_path = 'shapefiles/District.shp'
+        shapefile_path = '../shapefiles/District.shp'
         gdf = gpd.read_file(shapefile_path)
         
         folium.GeoJson(
@@ -77,7 +77,7 @@ def display_map(show_district_layer, show_parliamentary_layer):
         ).add_to(m)
     
     if show_parliamentary_layer:
-        shapefile_path = 'shapefiles/PC_Boundary.shp'
+        shapefile_path = '../shapefiles/PC_Boundary.shp'
         gdf = gpd.read_file(shapefile_path)
         
         folium.GeoJson(
@@ -100,4 +100,4 @@ def display_news_updates():
         st.write(f"{article['title']} - {article['url']}")
 
 if __name__ == "__main__":
-    main()
+    run()
