@@ -11,7 +11,9 @@ import os
 from bs4 import BeautifulSoup
 from tqdm import tqdm
 import requests
+from dotenv import load_dotenv
 
+load_dotenv()
 
 def extract_text_from_url(url):
     try:
@@ -37,9 +39,7 @@ def extract_text_from_url(url):
 if __name__ == "__main__":
     batch_size = 64
     embed_model = VoyageEmbedding(model_name="voyage-law-2",
-                                  voyage_api_key="pa-wKyQ5fdcznsWKUwI4O6Vh6wv2id7STRkP6MgGZMTDmw")
-    llm = LlamaAPI(api_key="LL-VKaeJSiyL9m3GmUd4UmuegM1l3rAsknYs5qB0ui1vBCaHFNG7DAaMktHxPFdy83k",
-                   model="mistral-7b-instruct")
+                                  voyage_api_key=os.getenv("VOYAGE_API_KEY"))
     df = pd.read_csv("indian_laws_and_acts.csv")
     text_splitter = SemanticSplitterNodeParser(
         buffer_size=3, breakpoint_percentile_threshold=95, embed_model=embed_model
@@ -63,7 +63,7 @@ if __name__ == "__main__":
     documents = []
 
     docstore = SimpleDocumentStore()
-    if not os.path.exists("./docstores"):
+    if not os.path.exists("./docstore.json"):
         try:
             for idx in tqdm(df.index, desc="Processing URLs"):
                 text, cite = extract_text_from_url(df.loc[idx, "url"])
@@ -73,16 +73,20 @@ if __name__ == "__main__":
                 time.sleep(0.8)
                 if idx % batch_size == 0 and idx:
                     docstore.add_documents(documents)
-                    docstore.persist("./docstores")
+                    docstore.persist("./docstore.json")
                     documents = []
 
             docstore.add_documents(documents)
-            docstore.persist("./docstores")
+            docstore.persist("./docstore.json")
 
         except Exception as e:
-            os.remove("./docstores")
+            # os.remove("./docstore.json")
+            print(f"Error processing document: {e}")
     else:
-        docstore = SimpleDocumentStore.from_persist_dir(persist_dir="./docstores")
-        documents = docstore.docs
-    print(documents[0].metadata)
+        docstore = SimpleDocumentStore.from_persist_path("./docstore.json")
+        docs = []
+        for doc in docstore.docs:
+            docs.append(docstore.docs[doc])
+        print(len(docs), type(docs[0]), docs[0].metadata)
+    # pipeline.run(shuffle=True, docstore=docstore)
     pipeline.persist("./cache", cache_name="indian_acts")
