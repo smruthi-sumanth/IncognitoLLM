@@ -3,19 +3,17 @@ from pprint import pprint
 from streamlit import cache_data, cache_resource
 # For Presidio
 from presidio_analyzer import AnalyzerEngine, PatternRecognizer
+from presidio_analyzer.nlp_engine import NlpEngineProvider
 from presidio_analyzer.predefined_recognizers import AzureAILanguageRecognizer
 from presidio_anonymizer import AnonymizerEngine
 from presidio_anonymizer.entities import OperatorConfig
 from presidio_analyzer.nlp_engine import TransformersNlpEngine
-
-# For extracting text
 from pdfminer.high_level import extract_text, extract_pages
 from pdfminer.layout import LTTextContainer, LTChar, LTTextLine
 
-from backend.utils.config import model_config
+from backend.utils.config import model_config, PRESIDIO_SUPPORTED_ENTITIES
 
-# For updating the PDF
-from pikepdf import Pdf, AttachedFileSpec, Name, Dictionary, Array
+
 def initialize_analyzer():
     """
     Initialize the Presidio analyzer engine.
@@ -24,15 +22,24 @@ def initialize_analyzer():
         AnalyzerEngine: The Presidio analyzer engine.
     """
     # Initialize the Presidio analyzer engine
-    nlp_engine = TransformersNlpEngine(models=model_config)
-    analyzer = AnalyzerEngine(nlp_engine=nlp_engine)
+    # nlp_engine = TransformersNlpEngine(models=model_config)
+
+    configuration = {
+        "nlp_engine_name": "spacy",
+        "models": [{"lang_code": "en", "model_name": "en_core_web_sm"}],
+    }
+
+    provider = NlpEngineProvider(nlp_configuration=configuration)
+    analyzer = AnalyzerEngine(nlp_engine=provider.create_engine())
 
     azure_recognizer = AzureAILanguageRecognizer()
     analyzer.registry.add_recognizer(azure_recognizer)
+
     # Add the pattern recognizer to the analyzer
-    pattern_recognizer = PatternRecognizer(supported_entity="PHONE_NUMBER", supported_language="en")
-    analyzer.registry.add_recognizer(pattern_recognizer)
+    # pattern_recognizer = PatternRecognizer(supported_entity="PHONE_NUMBER", supported_language="en")
+    # analyzer.registry.add_recognizer(pattern_recognizer)
     return analyzer
+
 
 def analyze_text(text: bytes):
     """
@@ -56,7 +63,7 @@ def analyze_text(text: bytes):
                 # Analyze the text using the analyzer engine
                 analyzer_results = analyzer.analyze(text=text_to_anonymize, language='en')
 
-                if text_to_anonymize.isspace() == False:
+                if not text_to_anonymize.isspace():
                     print(text_to_anonymize)
                     print(analyzer_results)
 

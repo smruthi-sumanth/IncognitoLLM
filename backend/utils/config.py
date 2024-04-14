@@ -1,6 +1,5 @@
 model_config = [{"lang_code": "en", "model_name": {
-    "spacy": "en_core_web_sm",  # use a small spaCy model for lemmas, tokens etc.
-    "transformers": "Venkatesh4342/NER-Indian-xlm-roberta",  # use a BERT model for embeddings
+    "spacy": "en_core_web_sm",
     }
 }]
 
@@ -16,4 +15,4 @@ PRESIDIO_SUPPORTED_ENTITIES = [
         "PROFESSION",
         "USERNAME",
         "ID"
-    ],
+    ]
