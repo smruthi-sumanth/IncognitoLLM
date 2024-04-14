@@ -1,13 +1,17 @@
 import streamlit as st
 from streamlit_antd_components import MenuItem, menu
+from settings.config import FIRDetails, COMPLAINT_DICT
 
 def form_entry():
     st.title('Enter Form')
+    scheme = FIRDetails.schema()['properties']
+    labels = scheme.keys()
+    # print(scheme)
     with st.form(key='my_form'):
-        labels = ['Name', 'ID', 'Station Code', 'Crime Category Code', 'Crime Description']
         form_data = {}
-        for label in labels:
-            form_data[label] = [st.text_input(label=label)]
+
+        for label in COMPLAINT_DICT.keys():
+            form_data[label] = [st.text_input(label=COMPLAINT_DICT[label])]
             form_data[label].append(st.checkbox(label='is anonymized?', value=True, key=label.lower()))
 
         submit_button = st.form_submit_button(label='Submit')
