@@ -4,18 +4,17 @@ from streamlit_antd_components import MenuItem, menu
 def form_entry():
     st.title('Enter Form')
     with st.form(key='my_form'):
-        name = st.text_input(label='Name')
-        ID = st.text_input(label='Enter ID')
-        station = st.text_input(label='Station Code')
-        crime_category_code = st.text_input(label='Crime Category Code')
-        crime_description = st.text_input(label='Provide Description of Crime')
+        labels = ['Name', 'ID', 'Station Code', 'Crime Category Code', 'Crime Description']
+        form_data = {}
+        for label in labels:
+            form_data[label] = [st.text_input(label=label)]
+            form_data[label].append(st.checkbox(label='is anonymized?', value=True, key=label.lower()))
+
         submit_button = st.form_submit_button(label='Submit')
         if submit_button:
-            st.write(f'Submitted Name: {name}')
-            st.write(f'Submitted ID: {ID}')
-            st.write(f'Submitted Station Code: {station}')
-            st.write(f'Submitted Crime Category Code: {crime_category_code}')
-            st.write(f'Submitted Crime Description: {crime_description}')
+            for label in labels:
+                st.write(f'Submitted {label}: {form_data[label][0]}')
+
 
 def upload_document():
     st.title('Attach Document')
@@ -23,6 +22,7 @@ def upload_document():
     if uploaded_file is not None:
         st.session_state['uploaded_document'] = True  # Set the session state to True
         st.write(f"File uploaded successfully: {uploaded_file.name}")
+
 
 def info():
     st.title('Register Offender')
