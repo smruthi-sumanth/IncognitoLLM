@@ -1,5 +1,4 @@
 from pydantic import BaseModel, Field
-from datetime import datetime
 from typing import Optional, List
 
 
@@ -26,6 +25,7 @@ class Header(BaseModel):
     fir_date: str = Field(title="FIR Date")
     unitName: str = Field(title="Police Station Name")
 
+
 class Occurrence(BaseModel):
     day: str = Field(title="Day of Occurrence of Offence")
     from_date: str = Field(title="From Date of Occurrence")
@@ -42,6 +42,7 @@ class Occurrence(BaseModel):
     village: str = Field(title="Village")
     beat: str = Field(title="Beat Name")
 
+
 class Suspect(BaseModel):
     idx: int = Field(title="Sl. No.")
     identifier: str = Field(title="Name or Father's Name or Caste or Address")
@@ -51,6 +52,7 @@ class Suspect(BaseModel):
     age: int = Field(title="Age")
     occupation: str = Field(title="Labourer")
 
+
 class Victim(BaseModel):
     idx: int = Field(title="Sl. No.")
     name: str = Field(title="Name")
@@ -58,6 +60,7 @@ class Victim(BaseModel):
     sex: str = Field("Gender")
     age: int = Field("Age")
     occupation: str = Field("Occupation")
+
 
 class StolenProperty(BaseModel):
     idx: int = Field(title="Sl. No.")
@@ -99,8 +102,10 @@ class FIRDetails(BaseModel):
     complainant_informant_passport_date_of_issue: Optional[str] = Field(title="Date of Issue")
     complainant_informant_address: Optional[str] = Field(title="Address")
     complainant_informant_sex: Optional[str] = Field(title="Sex")
-    complainant_informant_seen_occurrence: Optional[str] = Field(title="Whether complainant has seen the occurence or merely heard of it",)
-    accused_details: Optional[List[dict]] = Field(title="Details of known/suspected/unknown accused with full particulars")
+    complainant_informant_seen_occurrence: Optional[str] = Field(
+        title="Whether complainant has seen the occurence or merely heard of it", )
+    accused_details: Optional[List[dict]] = Field(
+        title="Details of known/suspected/unknown accused with full particulars")
     victim_details: Optional[List[dict]] = Field(title="Details of Victims with full particulars")
     stolen_property_details: Optional[List[dict]] = Field(title="Particulars of Property stolen/involved with value")
     inquest_report_ud_case_no: Optional[str] = Field(title="Inquest Report/U.D. Case No. if any")
@@ -108,5 +113,3 @@ class FIRDetails(BaseModel):
     action_taken: Optional[str] = Field(title="Action Taken"),
     fir_dispatch_date_time: Optional[str] = Field(title="Date and time of dispatch to the Court")
     fir_carrier_name: Optional[str] = Field(title="Name of PC/HC who carried the FIR to the Court")
-
-
