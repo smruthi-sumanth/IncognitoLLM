@@ -2,6 +2,7 @@ import streamlit as st
 from streamlit_antd_components import MenuItem, menu
 from settings.config import FIRDetails, COMPLAINT_DICT
 
+
 def form_entry():
     st.title('Enter Form')
     scheme = FIRDetails.schema()['properties']
@@ -29,10 +30,30 @@ def upload_document():
 
 
 def info():
-    st.title('Register Offender')
-    st.write('Select the method to register an offender.')
-    st.write('You can either enter the details in the form or upload a document.')
-    st.write("Click on the 'Form Entry' or 'Document Upload' option to proceed.")
+    registration_docs = """
+    # Register Offender's Details (FIR) 
+    The registration of an offender is a crucial step in the criminal justice process. To perform the process onf SecureX follow the belwo steps:
+    
+    ### Choose the suitable method:
+    - **Form Entry**: Enter the details of the offender in the form provided. It requires you to add in the belwo details:  
+        1. Name
+        2. Father's/Husband's Name 
+        3. Age  
+        4. Occupation
+        5. Religion
+        6. Address
+        7. Caste
+        8. Phone Number
+        9. Date of Issue of FIR
+        10. Date of FIR
+        11. Address
+        12. Sex \n
+    - **Document Upload**: Upload a document containing the details of the offender. In this case the document should be 
+     in the format of PDF, DOCX or TXT which is the FIR document. 
+     """
+
+    st.markdown(registration_docs)
+
 
 def run():
     if 'register_menu' not in st.session_state:
@@ -50,28 +71,26 @@ def run():
     if 'uploaded_document' not in st.session_state:
         st.session_state['uploaded_document'] = False
 
-
     layout = st.empty()
     col1, col2 = layout.columns([0.15, 0.85])
     with col1:
-            choice = menu(
-                [
-                    MenuItem('Report Menu', disabled=True),
-                    MenuItem(type='divider'),
-                    MenuItem('Form Entry', icon='ui-checks'),
-                    MenuItem('Document Upload', icon='upload'),
-                ],
-                variant='filled',
-                size='lg',
-                color='teal',
-                index=0,
-                indent=0,
-                return_index=True,
-            )
-            # st.write(f"Selected: {choice}")
+        choice = menu(
+            [
+                MenuItem('Report Menu', disabled=True),
+                MenuItem(type='divider'),
+                MenuItem('Form Entry', icon='ui-checks'),
+                MenuItem('Document Upload', icon='upload'),
+            ],
+            variant='filled',
+            size='lg',
+            color='teal',
+            index=0,
+            indent=0,
+            return_index=True,
+        )
+        # st.write(f"Selected: {choice}")
     with col2:
         st.session_state['register_menu'][choice]()
-
 
 
 if __name__ == "__main__":

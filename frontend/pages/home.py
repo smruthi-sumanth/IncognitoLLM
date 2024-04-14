@@ -51,42 +51,42 @@ def display_map(show_district_layer, show_parliamentary_layer, height=500):
 
 
 def display_news_updates():
-    top_headlines = newsapi.get_top_headlines(sources='the-times-of-india, the-hindu', language='en')
+    top_headlines = newsapi.get_top_headlines(language='en')
     with stylable_container(
-            key="container_with_border",
+            key="container",
             css_styles="""
             {
-                background-color: #096A4A;
-                color: black;
-                padding: 10px;
-                border-radius: 5px;
-                border: 1px solid black;
+                background-color: #00224D;
+                color: #41C9E2;
+                padding: 1%;
                 overflow: scroll;
             }
             a {
-                color: black;
+                text-decoration: none; 
+                text-align: center; 
+                padding: 10px; 
             }
             """,
     ):
+        markdown_template = """
+            [{title}]({source_link}) 
+         """
         for article in top_headlines['articles']:
-            st.markdown(f"""
-            > **{article['title']}** \n\n > Source: [{article['url']}]({article['url']})
-            """)
+            st.markdown(markdown_template.format(title=article['title'], source_link=article['url']))
             st.divider()
 
 def run():
     # st.sidebar.title('Navigation')
     # page = st.sidebar.radio("Go to", ["Home", "Enter Form", "Attach Document"])
-    st.title('Karnataka State Police')
-    st.header('Welcome to the Karnataka State Police Portal')
-    st.write('This portal provides information on crime statistics, news updates, and AI recommendations.')
-    cols = st.columns([2, 1])
+    st.title('SecureX')
+    st.caption('Anonymize, Secure, and Analyze (ASA) your data.')
+    cols = st.columns([4, 2])
+
     with cols[0]:
         with st.container(height=800):
             show_district_layer = st.checkbox("Show District Layer")
             show_parliamentary_layer = st.checkbox("Show Parliamentary Boundaries Layer")
             display_map(show_district_layer, show_parliamentary_layer, height=600)
-            st.header("The Times of India.")
     with cols[1]:
         with st.container(height=800):
             display_news_updates()
