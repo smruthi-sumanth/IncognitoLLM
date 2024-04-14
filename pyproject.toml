@@ -7,6 +7,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.10"
+deeplake = "^3.9.0"
 streamlit = "^1.33.0"
 streamlit-antd-components = "^0.3.2"
 python-dotenv = "^1.0.1"
@@ -14,6 +15,16 @@ folium = "^0.16.0"
 geopandas = "^0.14.3"
 newsapi-python = "^0.2.7"
 streamlit-extras = "^0.4.2"
+llama-index = "^0.10.28"
+llama-index-llms-llama-api = "^0.1.4"
+tqdm = "^4.66.2"
+llama-index-embeddings-voyageai = "^0.1.4"
+llama-index-vector-stores-deeplake = "^0.1.2"
+modal = "^0.62.63"
+ocrmypdf = "^16.1.2"
+presidio-analyzer = {extras = ["azure-ai-language"], version = "^2.2.354"}
+presidio-anonymizer = "^2.2.354"
+pymupdf = "^1.24.1"
 
 
 [build-system]
