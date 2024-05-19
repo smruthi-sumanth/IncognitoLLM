@@ -83,5 +83,3 @@ This project is licensed under the [MIT License](LICENSE).
 - [Docker](https://www.docker.com/) for containerization.
 
 This README.md provides an overview of the SecuraX project, including its features, installation instructions for local and Docker-based deployment, contribution guidelines, and licensing information. It also acknowledges the key technologies and tools used in the project.
-
-Note that you might need to adjust some parts of the documentation based on the actual implementation details and dependencies of your project. Additionally, you may want to include more sections or details as necessary, such as usage examples, API documentation, or architecture diagrams.
