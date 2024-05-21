@@ -1,5 +1,5 @@
 from .register import run as register_run
-from .home import run as home_run
+from .dashboard import run as dashboard_run
 
 
-__all__ = ["home_run", "register_run"]
+__all__ = ["dashboard_run", "register_run"]

@@ -1,18 +1,15 @@
 import streamlit as st
 import streamlit_antd_components as sac
 from dotenv import load_dotenv
-from pages import home_run, register_run
-
+from pages import register_run, dashboard_run
 
 load_dotenv()
-
 
 def menu_callback():
     st.session_state.page_index = pages[st.session_state.tab_item][1]
 
-
 pages = {
-    "Home": [home_run, 0, "house"],
+    "Dashboard": [dashboard_run, 0, "house"],
     "Register": [register_run, 1, "search"],
 }
 
@@ -29,7 +26,7 @@ def main():
     st.markdown(
         """
         <style>
-    .appview-container .main .block-container{{
+   .appview-container.main.block-container{{
             padding-top: {padding_top}rem; 
             padding-left: 1rem;
             padding-right: 1rem;}}
@@ -41,7 +38,6 @@ def main():
     )
     sac.tabs(
         [sac.TabsItem(label=i, icon=pages[i][2]) for i in pages.keys()],
-        # variant="outline",
         index=st.session_state.page_index,
         color="teal",
         on_change=menu_callback,
