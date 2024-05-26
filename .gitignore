@@ -162,4 +162,4 @@ cython_debug/
 .idea/
 
 poetry.lock
-backend/data/smtg2.py
+secura/backend/data/smtg2.py

@@ -5,16 +5,16 @@ LABEL authors="p1utoze"
 WORKDIR /securax
 
 # Copy the requirements file into the container
-COPY frontend/requirements.txt .
+COPY secura/requirements.txt .
 
 # Install the Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the entire frontend directory into the container
-COPY frontend/ ./frontend/
+# Copy the entire secura directory into the container
+COPY secura/ ./frontend/
 
 # Copy the entire backend directory into the container
-COPY backend/ ./backend/
+COPY secura/backend/ ./backend/
 
 # Expose the Streamlit port
 EXPOSE 80

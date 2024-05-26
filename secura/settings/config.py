@@ -5,6 +5,8 @@ PROJECT_ROOT = Path(__file__).parent.parent
 
 SHAPEFILES_DIR = PROJECT_ROOT / "shapefiles"
 
+ANALYZER_INFERENCE_URL = "https://tootertoo--presidio-analyzers-flairanalyzer-flair-text-analyzer.modal.run"
+
 _page_config = dict(
         page_title="SecurA",
         page_icon="👮🏻",
