@@ -8,11 +8,11 @@ import plotly.graph_objects as go
 import plotly.express as px
 
 # Database connection details
-DB_USER = 'plutoze'
-DB_PASS = 'KSP.azure@2024!'
-DB_HOST = 'my-ksp-db.postgres.database.azure.com'
-DB_PORT = 5432
-DB_NAME = 'crime'
+DB_USER = os.environ.get('DB_USER')
+DB_PASS = os.environ.get('DB_PASS')
+DB_HOST = os.environ.get('DB_HOST')
+DB_PORT = os.environ.get('DB_PORT')
+DB_NAME = os.environ.get('DB_NAME')
 
 # URL encoding the password
 encoded_db_pass = quote_plus(DB_PASS)
