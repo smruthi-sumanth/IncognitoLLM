@@ -1,6 +1,7 @@
 import streamlit as st
 from streamlit_antd_components import MenuItem, menu
 from settings.config import FIRDetails, COMPLAINT_DICT
+from .backend.components.llm import LLM
 
 
 def form_entry():
@@ -26,6 +27,7 @@ def upload_document():
     uploaded_file = st.file_uploader("Choose a file", type=["pdf", "docx", "txt"])
     if uploaded_file is not None:
         st.session_state['uploaded_document'] = True  # Set the session state to True
+        st.session_state["llm"].process_pdf(uploaded_file.read())
         st.write(f"File uploaded successfully: {uploaded_file.name}")
 
 
@@ -70,6 +72,9 @@ def run():
 
     if 'uploaded_document' not in st.session_state:
         st.session_state['uploaded_document'] = False
+
+    if "llm" not in st.session_state:
+        st.session_state["llm"] = LLM()
 
     layout = st.empty()
     col1, col2 = layout.columns([0.15, 0.85])
