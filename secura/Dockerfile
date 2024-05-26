@@ -12,7 +12,7 @@ COPY requirements.txt .
 # Install the Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the entire frontend directory into the container
+# Copy the entire secura directory into the container
 COPY . ./frontend/
 
 # Expose the Streamlit port
