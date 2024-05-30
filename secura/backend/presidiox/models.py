@@ -1,8 +1,10 @@
+import os
+
 import modal
 from presidio_analyzer import AnalyzerEngine, RecognizerRegistry
 from presidio_analyzer.nlp_engine import NlpEngineProvider, NlpEngine
 from presidio_anonymizer import AnonymizerEngine
-from common import app
+from common import app, volume, MODEL_DIR
 import spacy
 from presidio_analyzer.predefined_recognizers import AzureAILanguageRecognizer
 from typing import Tuple
@@ -14,7 +16,7 @@ class AnalyzerInput(BaseModel):
     language: str = "en"
     score_threshold: float = 0.5
 
-@app.cls(keep_warm=1, gpu="any")
+@app.cls(container_idle_timeout=1200, gpu="T4", enable_memory_snapshot=True)
 class AzureAIAnalyzer:
     def __init__(self):
         self.analyzer = self.initialize_analyzer()
@@ -59,7 +61,7 @@ class AzureAIAnalyzer:
         return analyzer
 
 
-@app.cls(keep_warm=1, gpu="any")
+@app.cls(container_idle_timeout=1200, gpu="T4", volumes={MODEL_DIR: volume})
 class FlairAnalyzer:
     def __init__(self):
         self.engine_and_registry = self.create_nlp_engine_with_flair()
@@ -81,7 +83,6 @@ class FlairAnalyzer:
         Instantiate an NlpEngine with a FlairRecognizer and a small spaCy model.
         The FlairRecognizer would return results from Flair models, the spaCy model
         would return NlpArtifacts such as POS and lemmas.
-        :param model_path: Flair model path.
         """
         from flair_ner import FlairRecognizer
 
@@ -107,7 +108,7 @@ class FlairAnalyzer:
 
 
     @modal.web_endpoint(method="POST")
-    async def flair_text_analyzer(self, item: AnalyzerInput) -> str:
+    async def flair_text_analyzer(self, item: AnalyzerInput) -> list:
         """
         Analyze the given text using the Flair analyzer.
 

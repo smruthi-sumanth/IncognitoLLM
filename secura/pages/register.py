@@ -1,8 +1,8 @@
 import streamlit as st
 from streamlit_antd_components import MenuItem, menu
-from settings.helpers import text_analyze, anonymize, pdf_to_text
-from settings.config import FIRDetails, COMPLAINT_DICT
-from backend.components.llm import LLM
+from annotated_text import annotated_text
+from settings.helpers import text_analyze, anonymize, pdf_to_text, annotate, replace_markdown_tables_with_csv, convert_markdown_to_plain_text
+from settings.config import FIRDetails, COMPLAINT_DICT, FLAIR_ENTITIES
 
 
 def form_entry():
@@ -29,11 +29,25 @@ def upload_document():
     if uploaded_file is not None:
         st.session_state['uploaded_document'] = True  # Set the session state to True
         text_data, display_data = pdf_to_text(uploaded_file.read())
+        # print(text_data)
         col1, col2 = st.columns([1, 1])
         with col1:
             with st.container(height=600, border=2):
                 st.title(f"🗒️:green[PARSED PDF DATA from {uploaded_file.name}]")
                 st.markdown(display_data, unsafe_allow_html=True)
+        with col2:
+            with st.container(height=600, border=2):
+                with st.spinner("Analyzing the text data..."):
+                    analysis_results = text_analyze(text_data, entities=FLAIR_ENTITIES, score_threshold=0.09)
+                    if analysis_results:
+                        st.title(f"🗒️:green[ANONYMIZED PDF DATA from {uploaded_file.name}]")
+                        # print(anonymize(text_data, "mask", analysis_results, mask_char="X", number_of_chars=4).items)
+                        results = annotate(text_data, analyze_results=analysis_results)
+                        text_data = replace_markdown_tables_with_csv(text_data)
+                        text_data = convert_markdown_to_plain_text(text_data)
+                        # TODO: Store text data into the database
+                        annotated_text(*results)
+
         # data = st.session_state["llm"].process_pdf(uploaded_file.read())
         st.write(f"File uploaded successfully: {uploaded_file.name}")
 
@@ -81,7 +95,8 @@ def run():
         st.session_state['uploaded_document'] = False
 
     layout = st.empty()
-    col1, col2 = layout.columns([0.15, 0.85])
+    sidebar_width = 0.15
+    col1, col2 = layout.columns([sidebar_width, 1 - sidebar_width])
     with col1:
         choice = menu(
             [
