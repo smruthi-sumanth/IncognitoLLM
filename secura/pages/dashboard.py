@@ -1,49 +1,29 @@
 import streamlit as st
 import pandas as pd
-from sqlalchemy import create_engine, text
-from urllib.parse import quote_plus
-import os
+from settings.helpers import init_db_engine
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 import plotly.express as px
 
-# Database connection details
-DB_USER = os.environ.get('DB_USER')
-DB_PASS = os.environ.get('DB_PASS')
-DB_HOST = os.environ.get('DB_HOST')
-DB_PORT = os.environ.get('DB_PORT')
-DB_NAME = os.environ.get('DB_NAME')
-
-# URL encoding the password
-encoded_db_pass = quote_plus(DB_PASS)
 
 # SSL certificate path
-SSL_CERT_PATH = r'C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\site-packages\certifi\cacert.pem'
 
-# Check if SSL certificate file exists
-if not os.path.exists(SSL_CERT_PATH):
-    st.error("SSL Certificate File Not Found.")
-    raise FileNotFoundError("SSL Certificate File Not Found.")
+# # Check if SSL certificate file exists
+# if not os.path.exists(SSL_CERT_PATH):
+#     st.error("SSL Certificate File Not Found.")
+#     raise FileNotFoundError("SSL Certificate File Not Found.")
 
 # Creating the database engine
-engine = create_engine(
-    f"postgresql+psycopg2://{DB_USER}:{encoded_db_pass}@{DB_HOST}:{DB_PORT}/{DB_NAME}",
-    connect_args={
-        'sslmode': 'require',
-        'sslrootcert': SSL_CERT_PATH,
-        'connect_timeout': 50
-    }
-)
 
 def fetch_all_accused_details(engine):
-    query = "SELECT * FROM accused_details"
+    query = "SELECT * FROM chargesheets;"
     return pd.read_sql(query, engine)
 
 def display_crime_statistics():
     try:
         # Fetch all accused details
-        chargesheet_data = fetch_all_accused_details(engine)
-        
+        chargesheet_data = fetch_all_accused_details(st.session_state.engine)
+
         # Ensure 'final_report_date' and 'incidents' columns exist
         if 'final_report_date' not in chargesheet_data.columns or 'incidents' not in chargesheet_data.columns:
             st.error("Required columns ('final_report_date', 'incidents') not found in the dataset.")
@@ -73,7 +53,7 @@ def display_crime_statistics():
 def display_accused_details():
     try:
         # Fetch all accused details
-        accused_data = fetch_all_accused_details(engine)
+        accused_data = fetch_all_accused_details(st.session_state.engine)
         
         # Filtering data based on age
         filtered_data = accused_data[(accused_data['age'] >= 20) & (accused_data['age'] <= 60)]
@@ -152,12 +132,15 @@ def display_accused_details():
 def run():
     st.title('Crime Data Analysis Dashboard')
     st.subheader('Analyze, Secure, and Anonymize (ASA) your data.')
-    
+    if 'engine' not in st.session_state:
+        st.session_state.engine = init_db_engine()
+        print("Database engine initialized.")
+
     # Display crime statistics
-    display_crime_statistics()
+    # display_crime_statistics()
     
     # Display accused details
-    display_accused_details()
+    # display_accused_details()
 
 if __name__ == "__main__":
     run()

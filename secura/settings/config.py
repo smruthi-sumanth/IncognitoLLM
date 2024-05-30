@@ -1,17 +1,54 @@
+import os
 from pathlib import Path
+from urllib.parse import quote_plus
 from typing import Optional
 from pydantic import BaseModel, Field
 PROJECT_ROOT = Path(__file__).parent.parent
+from dotenv import load_dotenv
+load_dotenv()
 
 SHAPEFILES_DIR = PROJECT_ROOT / "shapefiles"
 
-ANALYZER_INFERENCE_URL = "https://tootertoo--presidio-analyzers-flairanalyzer-flair-text-analyzer.modal.run"
+SSL_CERT_PATH = PROJECT_ROOT / "certs" / "ca-certificate.crt"
+
+# Database connection details
+DB_USER = os.environ.get('DB_USER')
+DB_PASS = quote_plus(os.environ.get('DB_PASS'))
+DB_HOST = os.environ.get('DB_HOST')
+DB_PORT = os.environ.get('DB_PORT')
+DB_NAME = os.environ.get('DB_NAME')
+
+
+
+ANALYZER_INFERENCE_URL = "https://p1utoze--presidio-analyzers-flairanalyzer-flair-text-analyzer.modal.run"
 
 _page_config = dict(
         page_title="SecurA",
         page_icon="👮🏻",
         layout="wide",
     )
+
+FLAIR_ENTITIES = [
+    "IN_AADHAAR",
+    "IN_PAN",
+    "US_PASSPORT",
+    "US_BANK_NUMBER",
+    "IBAN_CODE",
+    "CRYPTO",
+    "EMAIL_ADDRESS",
+    "ADDRESS",
+    "AGE",
+    "NAME",
+    "CREDIT_CARD",
+    "DATE_TIME",
+    "PERSON",
+    "PHONE_NUMBER",
+    "ORGANIZATION",
+    "IN_VEHICLE_REGISTRATION",
+    "LOCATION",
+    "GENERIC_PII",
+    "ID"
+]
 
 COMPLAINT_DICT  = {
     "complainant_informant_name": "Name",
