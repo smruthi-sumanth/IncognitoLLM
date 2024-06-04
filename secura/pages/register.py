@@ -1,26 +1,86 @@
 import streamlit as st
 from streamlit_antd_components import MenuItem, menu
 from annotated_text import annotated_text
-from settings.helpers import text_analyze, anonymize, pdf_to_text, annotate, replace_markdown_tables_with_csv, convert_markdown_to_plain_text
-from settings.config import FIRDetails, COMPLAINT_DICT, FLAIR_ENTITIES
+from settings.helpers import (
+    text_analyze, anonymize,
+    pdf_to_text,
+    annotate,
+    replace_markdown_tables_with_csv,
+    convert_markdown_to_plain_text,
+    redact_encrypted_text
+)
+from streamlit_extras.stylable_container import stylable_container
+from settings.config import FIRDetails, COMPLAINT_DICT, FLAIR_ENTITIES, __KEY, CONTAINER_CSS
+from presidio_anonymizer.operators.encrypt import Encrypt
+from presidio_anonymizer.operators.decrypt import Decrypt
+
+
+def form_menu(form):
+    form_data = {}
+
+    for label in COMPLAINT_DICT.keys():
+        form_data[label] = [form.text_input(label=COMPLAINT_DICT[label])]
+        form_data[label].append(form.checkbox(label='is anonymized?', value=True, key=label.lower()))
+
+    submit_button = form.form_submit_button(label='Submit', use_container_width=True)
+    return form_data, submit_button
 
 
 def form_entry():
     st.title('Enter Form')
-    scheme = FIRDetails.schema()['properties']
-    labels = scheme.keys()
+    st.info('Fill in the details of the offender in the form below.')
+    st.warning("Scroll down to see more form fields.")
     # print(scheme)
-    with st.form(key='my_form'):
-        form_data = {}
-
-        for label in COMPLAINT_DICT.keys():
-            form_data[label] = [st.text_input(label=COMPLAINT_DICT[label])]
-            form_data[label].append(st.checkbox(label='is anonymized?', value=True, key=label.lower()))
-
-        submit_button = st.form_submit_button(label='Submit')
-        if submit_button:
+    button, height = None, 600
+    col1, col2 = st.columns(2)
+    with col1.container(height=height):
+        form = st.form(key='my_form')
+        # TODO: INPUT RECEIVED FORM DATA
+        data, button = form_menu(form)
+    if button:
+        scheme = FIRDetails.schema()['properties']
+        labels = scheme.keys()
+        with col2:
+            st.session_state['submitted_form'] = True
+            encrypted_data, decrypted_data = {}, {}
             for label in labels:
-                st.write(f'Submitted {label}: {form_data[label][0]}')
+
+                try:
+                    entry = data[label][0]
+                    if not entry or not data[label][1]: continue
+                    encrypted_data[label] = (
+                        st.session_state["encrypt_class"].operate(entry, {"key": __KEY})
+                    )
+                    decrypted_data[label] = st.session_state["decrypt_class"].operate(
+                        encrypted_data[label], {"key": __KEY}
+                    )
+                except KeyError:
+                    pass
+
+            del entry
+            with stylable_container(
+                    key="row1",
+                    css_styles=CONTAINER_CSS.format(
+                        background_color="#C9A503",
+                        value="none",
+                        height=(height - 10)/2
+                    )
+            ):
+                st.header(":black[ENCRYPTED REDACTED DATA]")
+                for field in encrypted_data:
+                    st.write(f"**{field}**: {encrypted_data[field]}")
+            with stylable_container(
+                    key="row2",
+                    css_styles=CONTAINER_CSS.format(
+                        background_color="#70FF91",
+                        value="none",
+                        height=(height - 10)/2
+                    )
+            ):
+                st.header(":black[DECRYPTED DATA]")
+                for field in decrypted_data:
+                    st.write(f"**{field}**: {redact_encrypted_text(decrypted_data[field])}")
+
 
 
 def upload_document():
@@ -38,6 +98,7 @@ def upload_document():
         with col2:
             with st.container(height=600, border=2):
                 with st.spinner("Analyzing the text data..."):
+                    # TODO: ANALYZED TEXT DATA RESULTS
                     analysis_results = text_analyze(text_data, entities=FLAIR_ENTITIES, score_threshold=0.09)
                     if analysis_results:
                         st.title(f"🗒️:green[ANONYMIZED PDF DATA from {uploaded_file.name}]")
@@ -93,6 +154,12 @@ def run():
 
     if 'uploaded_document' not in st.session_state:
         st.session_state['uploaded_document'] = False
+
+    if "encrypt_class" not in st.session_state:
+        st.session_state["encrypt_class"] = Encrypt()
+
+    if "decrypt_class" not in st.session_state:
+        st.session_state["decrypt_class"] = Decrypt()
 
     layout = st.empty()
     sidebar_width = 0.15

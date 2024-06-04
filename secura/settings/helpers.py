@@ -6,13 +6,12 @@ from typing import List, Optional
 from enum import Enum
 from .utils import markdown_insert_images
 import requests, tempfile
-import pymupdf4llm
 from .config import ANALYZER_INFERENCE_URL
 from sqlalchemy import create_engine
 from .config import DB_USER, DB_PASS, DB_HOST, DB_PORT, DB_NAME
 import pymupdf4llm
 from bs4 import BeautifulSoup
-import markdown, re
+import markdown, re, random
 
 class ModelType(Enum):
     """Model types for text analysis."""
@@ -55,6 +54,15 @@ def replace_markdown_tables_with_csv(text):
 
     return text
 
+
+def redact_encrypted_text(enc_txt):
+    # Replace encrypted text with REDACTED
+    size = len(enc_txt)
+    if size < 4:
+        return enc_txt[0] + "X" * (size - 1)
+    redact_len = random.randint(1, 5)
+    res = enc_txt[:redact_len] + "X" * (size - redact_len)
+    return res
 
 def convert_markdown_to_plain_text(md_content):
     # Convert Markdown to HTML

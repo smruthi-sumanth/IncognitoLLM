@@ -31,9 +31,12 @@ def main():
             padding-top: {padding_top}rem; 
             padding-left: 1rem;
             padding-right: 1rem;}}
+    .block-container.st-emotion-cache-1jicfl2 {{
+    padding: 2rem 1rem 10rem;
+    }}
     </style>
     """.format(
-            padding_top=2.0
+            padding_top=0.5
         ),
         unsafe_allow_html=True,
     )
